@@ -1,0 +1,7 @@
+${LAVALINK_DOMAIN} {
+  reverse_proxy lavalink:2333 {
+    transport http {
+      versions h2c 1.1
+    }
+  }
+}

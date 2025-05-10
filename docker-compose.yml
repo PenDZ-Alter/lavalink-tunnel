@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  lavalink:
+    image: fredboat/lavalink:latest
+    container_name: lavalink
+    volumes:
+      - ./lavalink/application.yml:/opt/Lavalink/application.yml
+      - ./lavalink/plugins:/opt/Lavalink/plugins
+    restart: always
+    expose:
+      - "2333"
+    environment: 
+      - LAVALINK_PASSWORD=${LAVALINK_PASSWORD}
+    networks:
+      - internal
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    volumes:
+      - ./Caddy:/etc/caddy/
+    entrypoint: ["/bin/sh", "-c", "envsubst < /etc/caddy/Caddyfile.template > /etc/caddy/Caddyfile && caddy run --config /etc/caddy/Caddyfile"]
+    environment:
+      - LAVALINK_DOMAIN=${LAVALINK_DOMAIN}
+    restart: always
+    networks:
+      - internal
+      - external
+    ports:
+      - "443:443"
+
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    command: tunnel run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    restart: always
+    networks:
+      - external
+
+networks:
+  internal:
+    driver: bridge
+  external:
+    driver: bridge
