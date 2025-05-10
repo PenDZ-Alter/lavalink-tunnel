@@ -1,7 +1,8 @@
-${LAVALINK_DOMAIN} {
-  reverse_proxy lavalink:2333 {
-    transport http {
-      versions h2c 1.1
-    }
-  }
+{
+  email youremail@domain.com
+  acme_dns cloudflare
+}
+
+https://${LAVALINK_DOMAIN} {
+  reverse_proxy lavalink:2333
 }
