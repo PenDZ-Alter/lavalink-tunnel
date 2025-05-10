@@ -25,6 +25,7 @@ services:
     environment:
       - LAVALINK_DOMAIN=${LAVALINK_DOMAIN}
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - CADDY_EMAIL_INFO=${CADDY_EMAIL_INFO}
     restart: always
     networks:
       - internal

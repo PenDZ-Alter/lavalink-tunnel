@@ -1,8 +1,10 @@
 {
-  email youremail@domain.com
-  acme_dns cloudflare
+  email ${CADDY_EMAIL_INFO}
+  acme_dns cloudflare {
+    env CLOUDFLARE_API_TOKEN
+  }
 }
 
-https://${LAVALINK_DOMAIN} {
+${LAVALINK_DOMAIN} {
   reverse_proxy lavalink:2333
 }
