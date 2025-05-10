@@ -16,7 +16,8 @@ services:
       - internal
 
   caddy:
-    image: caddy:latest
+    build:
+      context: ./Caddy
     container_name: caddy
     volumes:
       - ./Caddy:/etc/caddy/
@@ -29,6 +30,7 @@ services:
       - external
     ports:
       - "443:443"
+
 
 
   cloudflared:
