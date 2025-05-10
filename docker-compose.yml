@@ -24,6 +24,7 @@ services:
     entrypoint: ["/bin/sh", "-c", "envsubst < /etc/caddy/Caddyfile.template > /etc/caddy/Caddyfile && caddy run --config /etc/caddy/Caddyfile"]
     environment:
       - LAVALINK_DOMAIN=${LAVALINK_DOMAIN}
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
     restart: always
     networks:
       - internal
