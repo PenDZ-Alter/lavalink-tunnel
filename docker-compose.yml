@@ -1,50 +1,39 @@
-version: '3.8'
+version: "3.8"
 
 services:
   lavalink:
-    image: fredboat/lavalink:latest
+    image: fredboat/lavalink
     container_name: lavalink
     volumes:
       - ./lavalink/application.yml:/opt/Lavalink/application.yml
       - ./lavalink/plugins:/opt/Lavalink/plugins
-    restart: always
-    expose:
-      - "2333"
-    environment: 
-      - LAVALINK_PASSWORD=${LAVALINK_PASSWORD}
-    networks:
-      - internal
+    ports:
+      - "2333:2333"
+    environment:
+      - _JAVA_OPTIONS=-Xmx512m
 
   caddy:
     build:
       context: ./Caddy
     container_name: caddy
-    volumes:
-      - ./Caddy:/etc/caddy/
-    entrypoint: ["/bin/sh", "-c", "envsubst < /etc/caddy/Caddyfile.template > /etc/caddy/Caddyfile && caddy run --config /etc/caddy/Caddyfile"]
-    environment:
-      - LAVALINK_DOMAIN=${LAVALINK_DOMAIN}
-      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
-      - CADDY_EMAIL_INFO=${CADDY_EMAIL_INFO}
-    restart: always
-    networks:
-      - internal
-      - external
+    depends_on:
+      - lavalink
     ports:
+      - "80:80"
       - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddy:/etc/caddy
+      - ./Caddy/Caddyfile.template:/etc/caddy/Caddyfile.template
+      - ./Caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - EMAIL=${CADDY_EMAIL_INFO}
+      - DOMAIN=${LAVALINK_DOMAIN}
+    command: /bin/sh -c "envsubst < /etc/caddy/Caddyfile.template > /etc/caddy/Caddyfile && caddy run --config /etc/caddy/Caddyfile --adapter caddyfile"
 
-
-
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: cloudflared
-    command: tunnel run --token ${CLOUDFLARE_TUNNEL_TOKEN}
-    restart: always
-    networks:
-      - external
-
-networks:
-  internal:
-    driver: bridge
-  external:
-    driver: bridge
+volumes:
+  caddy_data:
+  caddy_config:

@@ -1,10 +1,7 @@
-{
-  email ${CADDY_EMAIL_INFO}
-  acme_dns cloudflare {
-    env CLOUDFLARE_API_TOKEN
+${DOMAIN} {
+  tls {
+    dns cloudflare {env.CLOUDFLARE_API_TOKEN}
   }
-}
 
-${LAVALINK_DOMAIN} {
   reverse_proxy lavalink:2333
 }
