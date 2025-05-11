@@ -21,3 +21,25 @@ services:
     restart: unless-stopped
     depends_on:
       - lavalink
+
+  zerotier:
+    image: quay.io/zerotier/zerotier-signal:latest
+    container_name: zerotier
+    network_mode: host
+    devices:
+      - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+    privileged: true
+    environment:
+      - ZT_NETWORKS=${ZEROTIER_NETWORK_ID}
+      - ZT_AUTHTOKEN=${ZEROTIER_API_TOKEN}
+    volumes:
+      - zerotier-data:/var/lib/zerotier-one
+    restart: unless-stopped
+    depends_on:
+      - lavalink
+
+volumes:
+  zerotier-data:
