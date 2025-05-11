@@ -1,7 +1,0 @@
-${DOMAIN} {
-  tls {
-    dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-  }
-
-  reverse_proxy lavalink:2333
-}

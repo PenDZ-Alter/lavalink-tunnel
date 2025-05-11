@@ -8,32 +8,16 @@ services:
       - ./lavalink/application.yml:/opt/Lavalink/application.yml
       - ./lavalink/plugins:/opt/Lavalink/plugins
     ports:
-      - "2333:2333"
+      - "${LAVALINK_PORT}:${LAVALINK_PORT}"
     environment:
       - _JAVA_OPTIONS=-Xmx512m
+      - LAVALINK_PASSWORD=${LAVALINK_PASSWORD}
+      - LAVALINK_PORT=${LAVALINK_PORT}
 
-  caddy:
-    build:
-      context: ./Caddy
-    container_name: caddy
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    command: tunnel run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    restart: unless-stopped
     depends_on:
       - lavalink
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
-    volumes:
-      - ./Caddy:/etc/caddy
-      - ./Caddy/Caddyfile.template:/etc/caddy/Caddyfile.template
-      - ./Caddy/Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
-    environment:
-      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
-      - EMAIL=${CADDY_EMAIL_INFO}
-      - DOMAIN=${LAVALINK_DOMAIN}
-    command: /bin/sh -c "envsubst < /etc/caddy/Caddyfile.template > /etc/caddy/Caddyfile && caddy run --config /etc/caddy/Caddyfile --adapter caddyfile"
-
-volumes:
-  caddy_data:
-  caddy_config:
